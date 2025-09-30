@@ -2,8 +2,8 @@ from main import square, square_wrong
 
 
 def test_square():
-    integer = 5
-    assert square(integer) == 25
+    Integer = 5
+    assert square(Integer) == 25
     assert square(1) == 1
     assert square(-5) == 25
     assert square(0) != "hello"
