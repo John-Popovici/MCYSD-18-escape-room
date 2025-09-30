@@ -1,8 +1,9 @@
-name: Run Test
+name: Run Pytest and Ruff
 
 on:
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -23,9 +24,11 @@ jobs:
       - name: Install the project
         run: uv sync --locked --all-extras --dev
 
-      - name: Run Ruff (Lint)
-        run: uv run ruff check . --output-format=github
-        continue-on-error: true
-
       - name: Run Pytest
         run: uv run pytest --cov=src tests/
+
+      - name: Run Ruff
+        if: success() || failure()
+        run: uv run ruff check . --output-format=github
+
+      
