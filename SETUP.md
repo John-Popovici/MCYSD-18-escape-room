@@ -1,12 +1,12 @@
-## Setup For New Developers
+# Setup For New Developers
 This course and project brings together people of varying proficiency and to serve as a point of reference for my classmates, I have compiled the following outline. - John P.
 
-### How do I set it up?
+## How do I set it up?
 
 This repository already contains the required elements (so don't do it again!) but for other groups using this as a reference (and for my future self), the process is outlined farther down in the file.
 
 
-### How to get the code
+## How to get the code
 
 1. Make sure you have the basic tools installed on your system including python, git, and uv.
 
@@ -31,7 +31,7 @@ uv run pytest # run pytest for testing
 ```
 
 
-### How to contribute
+## How to contribute
 
 1. Make sure you have your IDE of choice such as VSCodium or VSCode with appropriate extensions.
 
@@ -72,7 +72,7 @@ git push # sends the commit to GitHub
 	- If changes need to be further made before merging, repeat the above process.
 
 
-### How do I set it up? Continued
+## How do I set it up? Continued
 
 1. Make sure you have the basic tools installed on your system including python, git, and uv.
 
