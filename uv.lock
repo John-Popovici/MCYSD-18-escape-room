@@ -95,7 +95,7 @@ wheels = [
 ]
 
 [[package]]
-name = "mcysd-19-escape-room"
+name = "mcysd-18-escape-room"
 version = "0.1.0"
 source = { virtual = "." }
 

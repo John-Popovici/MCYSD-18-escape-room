@@ -1,7 +1,7 @@
 [project]
-name = "mcysd-19-escape-room"
+name = "mcysd-18-escape-room"
 version = "0.1.0"
-description = "Add your description here"
+description = "An escape room project"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = []
@@ -16,23 +16,20 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-addopts = "-v -s"
+xfail_strict = true
+addopts = "-v"
 
-[tool.ruff.lint]
-select = [
-    # pycodestyle
-    "E",
-    # Pyflakes
-    "F",
-    # pyupgrade
-    "UP",
-    # flake8-bugbear
-    "B",
-    # flake8-simplify
-    "SIM",
-    # isort
-    "I",
-    # pep8-naming
-    "N",
+[tool.ruff]
+line-length = 79
+lint.select = [
+    "ALL",
+]
+lint.ignore = [
+    "T201", # allow print
 ]
 
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+    "S101", # allow assert
+    "PLR2004", # allow magic numbers
+]
