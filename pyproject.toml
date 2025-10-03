@@ -26,6 +26,8 @@ lint.select = [
 ]
 lint.ignore = [
     "T201", # allow print
+    "D203", # conflicting rule
+    "D213", # conflicting rule
 ]
 
 [tool.ruff.lint.per-file-ignores]

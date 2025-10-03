@@ -6,19 +6,22 @@ def main() -> None:
     """Escape room setup method."""
     parser = argparse.ArgumentParser()
 
-    # python escape.py --start intro --transcript run.txt
+    # Parse arguments
     parser.add_argument(
-        "-s", "--start", dest = "start", default = "intro",
+        "-s", "--start", dest = "start_room", default = "intro",
         help = "Starting location",
     )
     parser.add_argument(
-        "-t", "--transcript", dest = "transcript", default = "run.txt",
+        "-t", "--transcript", dest = "transcript_loc", default = "run.txt",
         help = "Trsanscript file",
     )
+    args = parser.parse_args()
 
-    print("Hello from mcysd-18-escape-room!")
+    print(f"Starting in {args.start_room} and saving to {args.transcript_loc}")
     print(square(5))
     print(square_wrong(5))
+
+    # Generate rooms
 
 
 def square(a: int) -> int:

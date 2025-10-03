@@ -2,7 +2,7 @@
 
 import pytest
 
-from escape import square, square_wrong
+from src.escape import square, square_wrong
 
 
 def test_square() -> None:

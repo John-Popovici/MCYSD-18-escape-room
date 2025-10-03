@@ -8,7 +8,7 @@ class Soc(Base):
 
     def __init__(self) -> None:
         """Initialize the SOC room."""
-        super().__init__("SOC Room")
+        super().__init__("soc")
 
     def handle_command(self, command: str) -> bool:
         """Process player input inside the room returning sucess state."""
