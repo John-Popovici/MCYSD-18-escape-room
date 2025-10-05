@@ -8,6 +8,7 @@ dependencies = []
 
 [dependency-groups]
 dev = [
+    "basedpyright>=1.31.6",
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
     "ruff>=0.13.2",
@@ -19,13 +20,30 @@ pythonpath = ["src"]
 xfail_strict = true
 addopts = "-v"
 
+[tool.basedpyright]
+include = ["src"]
+extraPaths = [
+    "src",
+]
+exclude = [
+    "**/__pycache__",
+    "tests/**",
+]
+ignore = [
+    "*",
+]
+
 [tool.ruff]
 line-length = 79
 lint.select = [
     "ALL",
 ]
 lint.ignore = [
-    "T201", # allow print
+    "T201", # allow print()
+    "PTH123", # allow open()
+    "FBT", # allow boolean values in arguments
+    "ERA001", # allow commented-out code
+    "ISC003", # conflicting rule, allow explicit string concatenation
     "D203", # conflicting rule
     "D213", # conflicting rule
 ]
