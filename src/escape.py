@@ -1,37 +1,46 @@
 """CLI entry point (REPL)."""
+
 import argparse
+from argparse import Namespace
+
+from escaperoom.engine import Engine
 
 
 def main() -> None:
-    """Escape room setup method."""
+    """Parse arguments and start the game."""
     parser = argparse.ArgumentParser()
 
     # Parse arguments
-    parser.add_argument(
-        "-s", "--start", dest = "start_room", default = "intro",
-        help = "Starting location",
+    _ = parser.add_argument(
+        "-d",
+        "--debug",
+        dest="debug",
+        action="store_true",
+        help="Enable debug output",
     )
-    parser.add_argument(
-        "-t", "--transcript", dest = "transcript_loc", default = "run.txt",
-        help = "Trsanscript file",
+    _ = parser.add_argument(
+        "-s",
+        "--start",
+        dest="start_room",
+        default="intro",
+        help="Starting location",
     )
-    args = parser.parse_args()
+    _ = parser.add_argument(
+        "-t",
+        "--transcript",
+        dest="transcript_loc",
+        default="run.txt",
+        help="Transcript file",
+    )
+    args: Namespace = parser.parse_args()
 
-    print(f"Starting in {args.start_room} and saving to {args.transcript_loc}")
-    print(square(5))
-    print(square_wrong(5))
-
-    # Generate rooms
-
-
-def square(a: int) -> int:
-    """Square a number correctly."""
-    return a**2
-
-
-def square_wrong(a: int) -> int:
-    """Square a number incorrectly."""
-    return a + a
+    # Create and run game engine
+    engine: Engine = Engine(
+        debug=args.debug,  # pyright: ignore[reportAny]
+        start_room=args.start_room,  # pyright: ignore[reportAny]
+        transcript_loc=args.transcript_loc,  # pyright: ignore[reportAny]
+    )
+    engine.run()
 
 
 if __name__ == "__main__":
