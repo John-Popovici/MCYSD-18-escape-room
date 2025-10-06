@@ -34,13 +34,16 @@ def main() -> None:
     )
     args: Namespace = parser.parse_args()
 
-    # Create and run game engine
-    engine: Engine = Engine(
-        debug=args.debug,  # pyright: ignore[reportAny]
-        start_room=args.start_room,  # pyright: ignore[reportAny]
-        transcript_loc=args.transcript_loc,  # pyright: ignore[reportAny]
-    )
-    engine.run()
+    try:
+        # Create and run game engine
+        engine: Engine = Engine(
+            debug=args.debug,  # pyright: ignore[reportAny]
+            start_room=args.start_room,  # pyright: ignore[reportAny]
+            transcript_loc=args.transcript_loc,  # pyright: ignore[reportAny]
+        )
+        engine.run()
+    except ValueError as e:
+        print(e)
 
 
 if __name__ == "__main__":

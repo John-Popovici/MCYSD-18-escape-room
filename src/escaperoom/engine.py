@@ -12,36 +12,35 @@ class Engine:
         debug: bool,
         start_room: str,
         transcript_loc: str,
-    ) -> None:
+    ) -> bool:
         """Initialize the game engine."""
         self.debug: bool = debug
-        self.start_room: str = start_room
+        self.game_running: bool = True
         self.transcript_loc: str = transcript_loc
 
-    def run(self) -> None:  # noqa: C901, PLR0912
-        """Start the REPL loop."""
-        # Make rooms
-        rooms: set[Base] = {Soc()}
+        # Set up game information
+        self.inventory: dict[str, dict[str, str]] = {}
 
-        # Make game states
-        game_running: bool = True
-        inventory: dict[str, dict[str, str]] = {}
+        # Set up rooms and current_room
+        self.rooms: set[Base] = {Soc("data/")}
 
-        current_room: Base | None = None
-        for room in rooms:
-            print(f"{self.start_room} looking for {room.short_name}")
-            if self.start_room in (room.name, room.short_name):
-                current_room = room
+        self.current_room: Base
+        for room in self.rooms:
+            print(f"{start_room} looking for {room.short_name}")
+            if start_room in (room.name, room.short_name):
+                self.current_room = room
 
-        if current_room is None:
-            print(f"No starting room {self.start_room} exists. Closing game.")
-            return
+        if self.current_room is None:
+            error_msg: str = f"No room {start_room} exists. Please try again."
+            raise ValueError(error_msg)
 
         # Print out introduction
         print("Cyber Escape Room started. Type 'help' for commands.")
 
+    def run(self) -> None:
+        """Start the REPL loop."""
         # Game loop
-        while game_running:
+        while self.game_running:
             # Wait input
             command: list[str] = input("> ").lower().strip().split()
 
@@ -64,21 +63,23 @@ class Engine:
                     raise NotImplementedError
                 case _:
                     # Commands passed into room
-                    room_output: RoomOutput = current_room.handle_command(
-                        room_input=RoomInput(command, inventory))
+                    room_output: RoomOutput = self.current_room.handle_command(
+                        room_input=RoomInput(command, self.inventory),
+                    )
 
                     output_string: str = room_output.message
 
                     # if adding to the message
-                    if command[0] == "look":
+                    if command[0] == "look" and len(self.rooms) > 1:
                         output_string += "\nDoors lead to:"
-                        for room in rooms:
-                            output_string += f" {room.short_name}"
+                        for room in self.rooms:
+                            if self.current_room not in (
+                                room.name,
+                                room.short_name,
+                            ):
+                                output_string += f" {room.short_name}"
 
-                    print(output_string)
-
-
+            print(output_string)
             # Update game state
 
             # Print out update
-

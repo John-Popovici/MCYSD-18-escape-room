@@ -28,14 +28,12 @@ class Base(ABC):
         short_name: str,
         desc: str,
         items: list[str],
-        file_path: str,
     ) -> None:
         """Initialize the room with data."""
         self.name: str = name
         self.short_name: str = short_name
         self.desc: str = desc
         self.items: list[str] = items
-        self.file_path: str = file_path
 
 
     def handle_command(self, room_input: RoomInput) -> RoomOutput:

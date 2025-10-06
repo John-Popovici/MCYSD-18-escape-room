@@ -43,6 +43,8 @@ lint.ignore = [
     "PTH123", # allow open()
     "FBT", # allow boolean values in arguments
     "ERA001", # allow commented-out code
+    "TD", # less strict TODO
+    "FIX002", # allow TODO
     "ISC003", # conflicting rule, allow explicit string concatenation
     "D203", # conflicting rule
     "D213", # conflicting rule
