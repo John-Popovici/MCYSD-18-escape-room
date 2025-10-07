@@ -1,13 +1,14 @@
 [project]
-name = "mcysd-19-escape-room"
+name = "mcysd-18-escape-room"
 version = "0.1.0"
-description = "Add your description here"
+description = "An escape room project"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = []
 
 [dependency-groups]
 dev = [
+    "basedpyright>=1.31.6",
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
     "ruff>=0.13.2",
@@ -16,23 +17,41 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-addopts = "-v -s"
+xfail_strict = true
+addopts = "-v"
 
-[tool.ruff.lint]
-select = [
-    # pycodestyle
-    "E",
-    # Pyflakes
-    "F",
-    # pyupgrade
-    "UP",
-    # flake8-bugbear
-    "B",
-    # flake8-simplify
-    "SIM",
-    # isort
-    "I",
-    # pep8-naming
-    "N",
+[tool.basedpyright]
+include = ["src"]
+extraPaths = [
+    "src",
+]
+exclude = [
+    "**/__pycache__",
+    "tests/**",
+]
+ignore = [
+    "*",
 ]
 
+[tool.ruff]
+line-length = 79
+lint.select = [
+    "ALL",
+]
+lint.ignore = [
+    #"T201", # allow print()
+    "PTH123", # allow open()
+    "FBT", # allow boolean values in arguments
+    "ERA001", # allow commented-out code
+    "TD", # less strict TODO
+    "FIX002", # allow TODO
+    "ISC003", # conflicting rule, allow explicit string concatenation
+    "D203", # conflicting rule
+    "D213", # conflicting rule
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+    "S101", # allow assert
+    "PLR2004", # allow magic numbers
+]
