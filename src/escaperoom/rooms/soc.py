@@ -14,12 +14,11 @@ class Soc(Base):
         super().__init__(
             name="SOC Triage Desk",
             short_name="soc",
-            desc="The SSH logs show repeated authentication failures. " +
-            "Your task is to identify the most likely attacking subnet.",
+            desc="The SSH logs show repeated authentication failures. "
+            + "Your task is to identify the most likely attacking subnet.",
             items=["auth.log"],
+            files=[f"{data_path}auth.log"],
         )
-        self.file_path: str = f"{data_path}auth.log"
-
 
     @override
     def _inspect(self, room_input: RoomInput) -> RoomOutput:
@@ -27,17 +26,14 @@ class Soc(Base):
         msg: str = ""
         success: bool = False
         if room_input.command[1] == "auth.log":
-            msg += f"I am inspecting {self.file_path}"
-            msg += f"\nFile is {Path(self.file_path).exists()}"
+            msg += f"I am inspecting {self.files[0]}.\n"
+            msg += f"File is {Path(self.files[0]).exists()}.\n"
             success = True
         else:
-            msg += f"No such item {room_input.command[1]}."
+            msg += f"No such item {room_input.command[1]}.\n"
         return RoomOutput(success=success, message=msg)
-        raise NotImplementedError
-
 
     @override
     def _use(self, room_input: RoomInput) -> RoomOutput:
         """Implement game command: use."""
-        print(f"I am using {room_input.command[1]}")
         raise NotImplementedError

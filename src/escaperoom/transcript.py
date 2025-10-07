@@ -1,1 +1,1 @@
-"""Logger."""
+"""Transcript logger."""

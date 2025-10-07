@@ -39,7 +39,7 @@ lint.select = [
     "ALL",
 ]
 lint.ignore = [
-    "T201", # allow print()
+    #"T201", # allow print()
     "PTH123", # allow open()
     "FBT", # allow boolean values in arguments
     "ERA001", # allow commented-out code
