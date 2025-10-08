@@ -41,7 +41,7 @@ class Engine:
 
         # Set up rooms and current_room
         self.rooms: set[Base] = {Soc(data_path), Intro()}
-        self.current_room: Base = self._set_start_room(self.rooms, start_room)
+        self.current_room: Base = self.set_start_room(self.rooms, start_room)
 
         # Print out introduction
         print_log("Cyber Escape Room started. Type 'help' for commands.\n")
@@ -51,14 +51,14 @@ class Engine:
         # Game loop
         while self.game_running:
             # Wait input
-            command: list[str] = self._get_input()
+            command: list[str] = self.get_input()
 
             # Process command
-            output_str: str = self._handle_command(command)
+            output_str: str = self.handle_command(command)
             print_log(output_str)
 
     @staticmethod
-    def _set_start_room(rooms: set[Base], start_room: str) -> Base:
+    def set_start_room(rooms: set[Base], start_room: str) -> Base:
         """Search for starting room in defined rooms."""
         temp_current_room: Base | None = None
         for room in rooms:
@@ -73,19 +73,18 @@ class Engine:
         return temp_current_room
 
     @staticmethod
-    def _get_input() -> list[str]:
+    def get_input() -> list[str]:
         """Get and normalize user input."""
         input_str: str = input("> ").lower().strip()
         log("> " + input_str + "\n")
         return input_str.split()
 
-    def _handle_command(self, command: list[str]) -> str:
+    def handle_command(self, command: list[str]) -> str:
         """Process user commands and return output string."""
-        output_str: str = ""
         # Handle engine commands move, inventory, hint, save, load, quit
         match command[0]:
             case "move":
-                output_str += self._move(command)
+                return self.move(command)
             case "inventory":
                 raise NotImplementedError
             case "hint":
@@ -97,13 +96,11 @@ class Engine:
             case "load":
                 raise NotImplementedError
             case "quit":
-                output_str += self._quit()
+                return self.quit()
             case _:
-                output_str = self._handle_room_command(command)
+                return self.handle_room_command(command)
 
-        return output_str
-
-    def _handle_room_command(self, command: list[str]) -> str:
+    def handle_room_command(self, command: list[str]) -> str:
         """Delegate command to the current room and handle special cases."""
         # Commands passed into room
         room_output: RoomOutput = self.current_room.handle_command(
@@ -121,12 +118,12 @@ class Engine:
 
         return output_str
 
-    def _quit(self) -> str:
+    def quit(self) -> str:
         """Implement game command: quit."""
         self.game_running = False
         return "Quitting the game.\n"
 
-    def _move(self, command: list[str]) -> str:
+    def move(self, command: list[str]) -> str:
         """Implement game command: move."""
         # If already in the room
         if command[1] in self.current_room.names:
