@@ -8,6 +8,7 @@ from escaperoom.rooms.base import Base, RoomInput, RoomOutput
 class Intro(Base):
     """Room defining an intro room."""
 
+    @override
     def __init__(self) -> None:
         """Initialize the intro room."""
         super().__init__(
@@ -18,11 +19,9 @@ class Intro(Base):
         )
 
     @override
-    def _inspect(self, room_input: RoomInput) -> RoomOutput:
-        """Implement game command: inspect."""
-        return RoomOutput(False, f"No such item {room_input.command[1]}.\n")
-
-    @override
-    def _use(self, room_input: RoomInput) -> RoomOutput:
-        """Implement game command: use."""
-        return RoomOutput(False, f"No such item {room_input.command[1]}.\n")
+    def hint(self, room_input: RoomInput) -> RoomOutput:
+        """Implement game command: hint."""
+        return RoomOutput(
+            success=True,
+            message="You should explore the facility.\n",
+        )

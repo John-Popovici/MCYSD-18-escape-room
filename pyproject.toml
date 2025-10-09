@@ -45,6 +45,7 @@ lint.ignore = [
     "ERA001", # allow commented-out code
     "TD", # less strict TODO
     "FIX002", # allow TODO
+    "TRY300", # allow return in try blocks
     "ISC003", # conflicting rule, allow explicit string concatenation
     "D203", # conflicting rule
     "D213", # conflicting rule
