@@ -1,4 +1,4 @@
-"""Tests for escape room game."""
+"""Tests for escape room game CLI entry point."""
 
 import pytest
 
@@ -87,8 +87,3 @@ def test_arg_parsing(monkeypatch, argv, expected) -> None:  # noqa: ANN001
     escape.main()
 
     assert captured == expected
-
-
-# def test_square() -> None:
-# @pytest.mark.xfail(reason="Not yet implemented")
-# @pytest.mark.xfail(reason="Not yet implemented")

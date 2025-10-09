@@ -1,4 +1,4 @@
-"""Tests for escape room game."""
+"""Tests for escape room game utility functions."""
 
 from escaperoom.utils import print_log
 
