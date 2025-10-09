@@ -60,11 +60,18 @@ class Base(ABC):
                 return self.inspect(room_input)
             case "use":
                 return self.use(room_input)
+            case "hint":
+                return self.hint(room_input)
             case _:
                 return RoomOutput(
                     success=False,
                     message=f"No such command {room_input.command[0]}.\n",
                 )
+
+    @abstractmethod
+    def hint(self, room_input: RoomInput) -> RoomOutput:
+        """Implement game command: hint."""
+        raise NotImplementedError
 
     def look(self) -> RoomOutput:
         """Implement game command: look."""
@@ -80,16 +87,21 @@ class Base(ABC):
             msg += "There are no items to interact with.\n"
 
         # Return output
-        return RoomOutput(success=True, message=msg)
+        return RoomOutput(
+            success=True,
+            message=msg,
+        )
 
     def inspect(self, room_input: RoomInput) -> RoomOutput:
         """Implement game command: inspect."""
         return RoomOutput(
-            False, f"No such item {room_input.command[1]} to inspect.\n",
+            success=False,
+            message=f"No such item {room_input.command[1]} to inspect.\n",
         )
 
     def use(self, room_input: RoomInput) -> RoomOutput:
         """Implement game command: use."""
         return RoomOutput(
-            False, f"No such item {room_input.command[1]} to use.\n",
+            success=False,
+            message=f"No such item {room_input.command[1]} to use.\n",
         )

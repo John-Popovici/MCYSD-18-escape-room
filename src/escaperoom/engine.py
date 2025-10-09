@@ -62,7 +62,7 @@ class Engine:
         """Search for starting room in defined rooms."""
         temp_current_room: Base | None = None
         for room in rooms:
-            if start_room in (room.name, room.short_name):
+            if start_room in room.names:
                 temp_current_room = room
                 break
 
@@ -87,8 +87,6 @@ class Engine:
                 return self.move(command)
             case "inventory":
                 raise NotImplementedError
-            case "hint":
-                raise NotImplementedError
             case "help":
                 raise NotImplementedError
             case "save":
@@ -106,10 +104,26 @@ class Engine:
         room_output: RoomOutput = self.current_room.handle_command(
             room_input=RoomInput(command, self.inventory),
         )
-        output_str: str = room_output.message
+        log("RoomOutput_sucess=" + str(room_output.success) + "\n")
+        log("RoomOutput_message=" + room_output.message + "\n")
 
         # Handle special cases
-        if command[0] == "look" and len(self.rooms) > 1:
+        match command[0]:
+            case "look":
+                return self.look(room_output)
+            case "hint":
+                return self.hint(room_output)
+            case _:
+                return room_output.message
+
+    def hint(self, room_output: RoomOutput) -> str:
+        """Implement engine layer for game command: hint."""
+        return room_output.message
+
+    def look(self, room_output: RoomOutput) -> str:
+        """Implement engine layer for game command: look."""
+        output_str: str = room_output.message
+        if len(self.rooms) > 1:
             output_str += "Doors lead to:"
             for room in self.rooms:
                 if self.current_room is not room:
