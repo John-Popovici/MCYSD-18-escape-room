@@ -1,13 +1,12 @@
 """The engine for the escape game."""
 
+import textwrap
 from pathlib import Path
 
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
 from escaperoom.rooms.intro import Intro
 from escaperoom.rooms.soc import Soc
 from escaperoom.utils import log, print_log
-
-import textwrap
 
 
 class Engine:
@@ -153,21 +152,23 @@ class Engine:
 
         # No room found
         return f"No such room {command[1]}.\n"
-    
+
     def help(self) -> str:
-        """
-        Implement game command: help
-        
+        """Implement game command: help.
+
         Returns:
             str: The response of the command.
+
         """
-        
-        help_text = textwrap.dedent("""
+        return textwrap.dedent("""
         About
         -----
         Your goal is to explore and solve puzzles in different rooms.
-        Each room presents unique challenges which you must solve in order to progress.
-        Use commands to look around, move between rooms, collect items, and figure out how to escape.
+        Each room presents unique challenges which you must solve
+        in order to progress.
+
+        Use commands to look around, move between rooms,
+        collect items, and figure out how to escape.
         Type commands in the prompt to interact with the game world.
 
 
@@ -182,7 +183,3 @@ class Engine:
         - quit         Exit the game
         \n
         """)
-        
-        return help_text
-
-
