@@ -7,6 +7,8 @@ from escaperoom.rooms.intro import Intro
 from escaperoom.rooms.soc import Soc
 from escaperoom.utils import log, print_log
 
+import textwrap
+
 
 class Engine:
     """Main REPL engine handling user input and room logic."""
@@ -88,7 +90,7 @@ class Engine:
             case "inventory":
                 raise NotImplementedError
             case "help":
-                raise NotImplementedError
+                return self.help()
             case "save":
                 raise NotImplementedError
             case "load":
@@ -151,3 +153,36 @@ class Engine:
 
         # No room found
         return f"No such room {command[1]}.\n"
+    
+    def help(self) -> str:
+        """
+        Implement game command: help
+        
+        Returns:
+            str: The response of the command.
+        """
+        
+        help_text = textwrap.dedent("""
+        About
+        -----
+        Your goal is to explore and solve puzzles in different rooms.
+        Each room presents unique challenges which you must solve in order to progress.
+        Use commands to look around, move between rooms, collect items, and figure out how to escape.
+        Type commands in the prompt to interact with the game world.
+
+
+        Available commands
+        ------------------
+
+        - help         Show this help message
+        - move <room>  Move to a different room
+        - inventory    Show your current inventory
+        - save         Save the current game state
+        - load         Load a previously saved game
+        - quit         Exit the game
+        \n
+        """)
+        
+        return help_text
+
+
