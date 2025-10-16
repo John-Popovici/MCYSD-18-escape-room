@@ -25,7 +25,7 @@ uv sync
 4. Run the project files, linting, and testing.
 
 ```bash
-uv run src/main.py # run the main python file
+uv run src/escape.py # run the main python file
 uv run ruff check # run ruff for linting
 uv run pytest # run pytest for testing
 ```

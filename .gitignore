@@ -14,3 +14,9 @@ wheels/
 .ruff*
 .coverage
 coverage*
+
+# Log files
+log.log
+
+# Game transcript
+run.txt
