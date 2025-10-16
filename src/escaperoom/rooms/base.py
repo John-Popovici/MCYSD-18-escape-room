@@ -57,9 +57,11 @@ class Base(ABC):
             case "look":
                 return self.look()
             case "inspect":
-                return self.inspect(room_input)
+                return self.interact(room_input)
             case "use":
-                return self.use(room_input)
+                return self.interact(room_input)
+            case "interact":
+                return self.interact(room_input)
             case "hint":
                 return self.hint(room_input)
             case _:
@@ -92,16 +94,11 @@ class Base(ABC):
             message=msg,
         )
 
-    def inspect(self, room_input: RoomInput) -> RoomOutput:
-        """Implement game command: inspect."""
+    def interact(self, room_input: RoomInput) -> RoomOutput:
+        """Implement game command: inspect, use, interact."""
+        # Permission was granted to merge the functions
         return RoomOutput(
             success=False,
-            message=f"No such item {room_input.command[1]} to inspect.\n",
-        )
-
-    def use(self, room_input: RoomInput) -> RoomOutput:
-        """Implement game command: use."""
-        return RoomOutput(
-            success=False,
-            message=f"No such item {room_input.command[1]} to use.\n",
+            message=f"No such item {room_input.command[1]} "
+                +" to interact with.\n",
         )

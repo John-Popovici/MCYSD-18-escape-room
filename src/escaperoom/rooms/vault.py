@@ -25,9 +25,14 @@ class Vault(Base):
         self.inspected_file = False
 
     @override
-    def inspect(self, room_input: RoomInput) -> RoomOutput:
-        """Implement game command: inspect."""
+    def interact(self, room_input: RoomInput) -> RoomOutput:
+        """Implement game command: inspect, use, interact."""
         if room_input.command[1] == "vault_dump.txt":
+            if self.inspected_file:
+                return RoomOutput(
+                    success=False,
+                    message="This has already been inspected.\n",
+                )
             output_str: str = "Veriying checksums...\n"
 
             # Solve the room challenge
@@ -42,12 +47,7 @@ class Vault(Base):
                 success=True,
                 message=output_str,
             )
-        return super().inspect(room_input)
-
-    @override
-    def use(self, room_input: RoomInput) -> RoomOutput:
-        """Implement game command: use."""
-        return super().inspect(room_input)
+        return super().interact(room_input)
 
     @override
     def hint(self, room_input: RoomInput) -> RoomOutput:
