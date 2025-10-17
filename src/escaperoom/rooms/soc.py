@@ -30,7 +30,21 @@ def parse_failed_ip(line: str) -> tuple[str, str | None]:
     except ValueError:
         return ("malformed", None)
     return("failed", ip_str)
-                
+
+def collect_failed_ip(file_path) -> tuple[list[str], int]:
+    """Opens the file, checks each line for status and ip and if failed login -> added to failed_ip"""
+    with open(file_path, encoding='utf-8') as f:
+        failed_ip=[]
+        malformed_count= 0
+        for line in f:
+            status, ip = parse_failed_ip(line)
+            if status == "failed":
+                failed_ip.append(ip)
+            elif status == "malformed":
+                malformed_count += 1
+            else:
+                continue
+        return failed_ip, malformed_count
  
 class Soc(Base):
     """Room handling SOC-related commands."""
