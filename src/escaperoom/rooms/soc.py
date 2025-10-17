@@ -45,6 +45,31 @@ def collect_failed_ip(file_path) -> tuple[list[str], int]:
             else:
                 continue
         return failed_ip, malformed_count
+    
+def find_right_subnet(ip_list) -> str :
+    ip_dict={}
+    sub_dict={}
+    for i in ip_list:
+        if i in ip_dict:
+            ip_dict[i]+=1
+        else:
+            ip_dict.update({i: 1})            
+    """Remove last part of ip and replace it with subnet"""
+    for i in ip_dict:
+        subnet_ip= i.split('.')
+        subnet_ip.pop()
+        subnet_prefinal= ('.').join(subnet_ip)
+        subnet_final= subnet_prefinal + ".0/24"
+        
+        if subnet_final in sub_dict:
+            sub_dict[subnet_final]+= 1
+        else:
+            sub_dict.update({subnet_final: 1})          
+    """Find most used subnet with .get to find the highest value"""       
+    most_used_subnet= max(sub_dict, key= sub_dict.get)
+    
+    return most_used_subnet, sub_dict[most_used_subnet]
+        
  
 class Soc(Base):
     """Room handling SOC-related commands."""
