@@ -23,12 +23,18 @@ class Soc(Base):
         self.inspected_file = False
 
     @override
-    def inspect(self, room_input: RoomInput) -> RoomOutput:
-        """Implement game command: inspect."""
+    def interact(self, room_input: RoomInput) -> RoomOutput:
+        """Implement game command: inspect, use, interact."""
         if room_input.command[1] == "auth.log":
-            output_str: str = "Parsing logs...\n"
+            # Ensure interaction only happens once
+            if self.inspected_file:
+                return RoomOutput(
+                    success=False,
+                    message="This has already been inspected.\n",
+                )
 
             # Solve the room challenge
+            output_str: str = "Parsing logs...\n"
             [item_name, item_data] = self.solve(self.files[0])
             output_str += item_to_str(item_name, item_data)
 
@@ -40,12 +46,7 @@ class Soc(Base):
                 success=True,
                 message=output_str,
             )
-        return super().inspect(room_input)
-
-    @override
-    def use(self, room_input: RoomInput) -> RoomOutput:
-        """Implement game command: use."""
-        return super().inspect(room_input)
+        return super().interact(room_input)
 
     @override
     def hint(self, room_input: RoomInput) -> RoomOutput:
