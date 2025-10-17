@@ -2,10 +2,36 @@
 
 from typing import override
 
+import re
+import ipaddress
+
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
 from escaperoom.utils import item_to_str
 
-
+def parse_failed_ip(line: str) -> tuple[str, str | None]:
+    """Checks each line if they have the right construction"""
+    if "Failed password" not in line:
+        return ("irrelevant", None)
+    elif " from " not in line:
+        return("malformed", None)
+        
+    ip_addr = line.find(" from ")
+    """Finds the right index for the IP address"""
+    tail_ip_addr = line[ip_addr + len(" from "):]
+    """Checks if the IP has the right format"""
+    match_ip = re.search( r'\d+(?:\.\d+){3}', tail_ip_addr)
+    
+    if match_ip is None:
+        return ("malformed", None)
+    ip_str = match_ip.group()    
+    
+    try:
+        ipaddress.IPv4Address(ip_str)
+    except ValueError:
+        return ("malformed", None)
+    return("failed", ip_str)
+                
+ 
 class Soc(Base):
     """Room handling SOC-related commands."""
 
