@@ -53,7 +53,7 @@ def test_room_basic(room_name) -> None:  # noqa: ANN001
 
 
 @pytest.mark.parametrize("room_name", room_modules)
-def test_room_interaction(room_name) -> None:  # noqa: ANN001
+def test_room_interaction(request, room_name) -> None:  # noqa: ANN001
     """Test room interaction commands."""
     room: Base = load_room(room_name)
 
@@ -75,11 +75,13 @@ def test_room_interaction(room_name) -> None:  # noqa: ANN001
         if command[0] in ("inspect", "use") and room_name in (
             "soc",
             "dns",
-            "vault",
+            # "vault",
             "malware",
             "final",
         ):
-            pytest.xfail(reason="Not yet implemented")
+            request.node.add_marker(
+                pytest.mark.xfail(reason="Not yet implemented"),
+            )
 
         output: RoomOutput = room.handle_command(RoomInput(command))
         assert output.success == expected_success, f"{command}"

@@ -6,6 +6,7 @@ from pathlib import Path
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
 from escaperoom.rooms.intro import Intro
 from escaperoom.rooms.soc import Soc
+from escaperoom.rooms.vault import Vault
 from escaperoom.utils import log, print_log
 
 
@@ -41,7 +42,11 @@ class Engine:
         self.inventory: dict[str, dict[str, str]] = {}
 
         # Set up rooms and current_room
-        self.rooms: set[Base] = {Soc(data_path), Intro()}
+        self.rooms: set[Base] = {
+            Intro(),
+            Soc(data_path),
+            Vault(data_path),
+        }
         self.current_room: Base = self.set_start_room(self.rooms, start_room)
 
         # Print out introduction
