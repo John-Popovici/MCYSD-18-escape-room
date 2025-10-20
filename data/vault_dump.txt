@@ -6,7 +6,7 @@ SAFE { 20 - 34 - 40 }
 SAFE{ 19-12-19 }
 SAFE{ 5-36-61 }
 S A F E{27-17-36}
-SAFE{  5-6-11 } <<< maybe
+SAFE{  5-6-12 } <<< maybe
 ‘SAFE’ markers may be split.
 SAFE{28-5-55}
 Telemetry stream initiated.

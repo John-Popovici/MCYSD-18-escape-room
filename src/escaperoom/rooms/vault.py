@@ -28,14 +28,15 @@ class Vault(Base):
     def interact(self, room_input: RoomInput) -> RoomOutput:
         """Implement game command: inspect, use, interact."""
         if room_input.command[1] == "vault_dump.txt":
+            # Ensure interaction only happens once
             if self.inspected_file:
                 return RoomOutput(
                     success=False,
                     message="This has already been inspected.\n",
                 )
-            output_str: str = "Veriying checksums...\n"
 
             # Solve the room challenge
+            output_str: str = "Veriying checksums...\n"
             [item_name, item_data] = self.solve(self.files[0])
             output_str += item_to_str(item_name, item_data)
 
@@ -79,9 +80,10 @@ class Vault(Base):
                 valid_results.append((int(a), int(b), int(c)))
 
         # Log if more than one valid result found
-        log("Found multiple valid results:\n")
-        for a, b, c in valid_results:
-            log(f"[{a}+{b}={c}]\n")
+        if len(valid_results) > 1:
+            log("Found multiple valid results:\n")
+            for a, b, c in valid_results:
+                log(f"[{a}+{b}={c}]\n")
 
         # TOKEN[SAFE]=a-b-c
         # EVIDENCE[SAFE].MATCH="SAFE{a-b-c}"
