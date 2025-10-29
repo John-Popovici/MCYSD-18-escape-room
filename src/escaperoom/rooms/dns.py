@@ -1,5 +1,9 @@
 """DNS Closet room implementation."""
 
+import base64
+import binascii
+import configparser
+from pathlib import Path
 from typing import override
 
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
@@ -7,7 +11,7 @@ from escaperoom.utils import item_to_str
 
 
 class Dns(Base):
-    """A room where the user is presented with a configuration analysis and decoding challenge."""
+    """A room presenting a configuration analysis and decoding challenge."""
 
     @override
     def __init__(self, data_path: str) -> None:
@@ -54,7 +58,8 @@ class Dns(Base):
         if self.inspected_file:
             output_str += "You have everything you need from this room.\n"
         else:
-            output_str += "You feel there is something in this room to inspect.\n"
+            output_str += ("You feel there is something in " +
+            "this room to inspect.\n")
         return RoomOutput(
             success=True,
             message=output_str,
@@ -62,11 +67,31 @@ class Dns(Base):
 
     def solve(self, file_path: str) -> tuple[str, dict[str, str]]:
         """Solves the room challenge."""
+        data = Path(file_path).read_text()
+
+        config = configparser.ConfigParser(allow_no_value=True, strict=False)
+        config.read_string("[DEFAULT]\n" + data)
+        cfg = dict(config["DEFAULT"])
+
+        # Decode all hints
+        hints = {}
+        for key, val in cfg.items():
+            if key.startswith("hint"):
+                try:
+                    hints[key] = base64.b64decode(val).decode("utf-8")
+                except (TypeError, binascii.Error, UnicodeDecodeError):
+                    hints[key] = None
+
+        # Find token: decode token_tag to get hint number
+        tag = base64.b64decode(cfg["token_tag"]).decode("utf-8")
+        target = f"hint{tag}"
+        token = hints[target].split()[-1].removesuffix(".")
+
         return (
             "DNS",
             {
-                "TOKEN": "closet",
-                "KEY": "hint2",
-                "DECODED_LINE": "The code is not in the roots but near the closet.",
+                "TOKEN": token,
+                "KEY": target,
+                "DECODED_LINE": hints[target],
             },
         )
