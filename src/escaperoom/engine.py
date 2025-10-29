@@ -4,6 +4,7 @@ import textwrap
 from pathlib import Path
 
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
+from escaperoom.rooms.dns import Dns
 from escaperoom.rooms.intro import Intro
 from escaperoom.rooms.soc import Soc
 from escaperoom.rooms.vault import Vault
@@ -45,8 +46,10 @@ class Engine:
         self.rooms: set[Base] = {
             Intro(),
             Soc(data_path),
+            Dns(data_path),
             Vault(data_path),
         }
+
         self.current_room: Base = self.set_start_room(self.rooms, start_room)
 
         # Print out introduction

@@ -100,5 +100,5 @@ class Base(ABC):
         return RoomOutput(
             success=False,
             message=f"No such item {room_input.command[1]} "
-                +" to interact with.\n",
+                + "to interact with.\n",
         )
