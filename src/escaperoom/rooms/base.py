@@ -4,8 +4,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from escaperoom.transcript import TranscriptLogger
-
 
 @dataclass
 class RoomInput:
@@ -34,7 +32,6 @@ class Base(ABC):
         desc: str,
         items: list[str] | None = None,
         files: list[str] | None = None,
-        transcript_logger: TranscriptLogger = None,
     ) -> None:
         """Initialize the room with data."""
         if items is None:
@@ -45,7 +42,6 @@ class Base(ABC):
         self.desc: str = desc
         self.items: list[str] = items
         self.files: list[str] | None = files
-        self.transcript_logger: TranscriptLogger = transcript_logger
 
         # Check all files exist
         if files is not None:

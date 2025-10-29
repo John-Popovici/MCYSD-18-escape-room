@@ -6,8 +6,8 @@ import configparser
 from pathlib import Path
 from typing import override
 
-from escaperoom.transcript import TranscriptLogger
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
+from escaperoom.transcript import TranscriptLogger
 from escaperoom.utils import item_to_str
 
 
@@ -15,7 +15,11 @@ class Dns(Base):
     """A room presenting a configuration analysis and decoding challenge."""
 
     @override
-    def __init__(self, transcript_logger: TranscriptLogger, data_path: str) -> None:
+    def __init__(
+        self,
+        transcript_logger: TranscriptLogger,
+        data_path: str,
+    ) -> None:
         """Initialize the DNS Closet room."""
         super().__init__(
             name="DNS Closet",
@@ -23,8 +27,8 @@ class Dns(Base):
             desc="The walls are covered with scribbled key=value pairs...",
             items=["dns.cfg"],
             files=[f"{data_path}dns.cfg"],
-            transcript_logger=transcript_logger,
         )
+        self.transcript_logger=transcript_logger
         self.inspected_file = False
 
     @override
@@ -42,9 +46,11 @@ class Dns(Base):
             output_str: str = "Decoding hints...\n"
             item_name, item_data = self.solve(self.files[0])
             output_str += item_to_str(item_name, item_data)
-            
+
             # Log evidence in transcript
-            self.transcript_logger.log_evidence(item_to_str(item_name, item_data))
+            self.transcript_logger.log_evidence(
+                item_to_str(item_name, item_data),
+            )
 
             # Add data to inventory
             room_input.inventory[item_name] = item_data
