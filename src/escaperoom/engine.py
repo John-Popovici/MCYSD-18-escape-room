@@ -97,7 +97,7 @@ class Engine:
             case "move":
                 return self.move(command)
             case "inventory":
-                raise NotImplementedError
+                return self.show_inventory()
             case "help":
                 return self.help()
             case "save":
@@ -193,3 +193,20 @@ class Engine:
         - quit         Exit the game
         \n
         """)
+
+    def show_inventory(self) -> str:
+        """Implement game command: inventory.
+
+        Returns:
+            str: The response of the command.
+
+        """
+        output_str = ("You currently hold: " +
+        ", ".join(self.inventory.keys()) + "\n")
+
+        if not self.inventory:
+            output_str = "You do not have any items in your inventory.\n"
+
+        return output_str
+
+
