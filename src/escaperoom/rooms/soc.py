@@ -132,17 +132,17 @@ class Soc(Base):
         if not failed_ips:
             return ("KEYPAD", {"TOKEN" : "NONE"})
         very_used_subnet, count_subnet  = find_right_subnet(failed_ips)
-        
         final_ip=[]
         
         for ip in failed_ips:
             if ipaddress.IPv4Address(ip) in ipaddress.IPv4Network(very_used_subnet):
                 final_ip.append(ip)
                 
+        #Checks the most used IP for the TOKEN creation        
         top_ip = max(final_ip, key=final_ip.count)
- 
+        #Just keep the last octet for the TOKEN
         final_token= top_ip.split(".")[3]
-        
+        #TOKEN construction
         TOKEN = final_token + str(count_subnet)
         
         return (
