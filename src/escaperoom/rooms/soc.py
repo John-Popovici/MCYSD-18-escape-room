@@ -128,12 +128,28 @@ class Soc(Base):
 
     def solve(self, file_path: str) -> (str, dict[str, str]):
         """Solves the room challenge."""
-        # return (
-        #     "KEYPAD",
-        #     {
-        #         "TOKEN": "4217",
-        #         "TOP24": "blahblah",
-        #         "COUNT": "whatever",
-        #     },
-        # )
-        raise NotImplementedError
+        failed_ips, malformed_count = collect_failed_ip(file_path)
+        if not failed_ips:
+            return ("KEYPAD", {"TOKEN" : "NONE"})
+        very_used_subnet, count_subnet  = find_right_subnet(failed_ips)
+        
+        final_ip=[]
+        
+        for ip in failed_ips:
+            if ipaddress.IPv4Address(ip) in ipaddress.IPv4Network(very_used_subnet):
+                final_ip.append(ip)
+                
+        top_ip = max(final_ip, key=final_ip.count)
+ 
+        final_token= top_ip.split(".")[3]
+        
+        TOKEN = final_token + str(count_subnet)
+        
+        return (
+            "KEYPAD",
+            {
+                "TOKEN": TOKEN,
+                "TOP24": very_used_subnet,
+                "COUNT": str(count_subnet),
+            },
+        )
