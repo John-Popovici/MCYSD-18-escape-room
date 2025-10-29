@@ -76,7 +76,7 @@ def test_room_interaction(request, room_name) -> None:  # noqa: ANN001
             "soc",
             # "dns",
             # "vault",
-            "malware",
+            # "malware",
             "final",
         ):
             request.node.add_marker(

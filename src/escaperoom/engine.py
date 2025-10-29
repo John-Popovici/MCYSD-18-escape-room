@@ -6,6 +6,7 @@ from pathlib import Path
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
 from escaperoom.rooms.dns import Dns
 from escaperoom.rooms.intro import Intro
+from escaperoom.rooms.malware import Malware
 from escaperoom.rooms.soc import Soc
 from escaperoom.rooms.vault import Vault
 from escaperoom.utils import log, print_log
@@ -48,6 +49,7 @@ class Engine:
             Soc(data_path),
             Dns(data_path),
             Vault(data_path),
+            Malware(data_path),
         }
 
         self.current_room: Base = self.set_start_room(self.rooms, start_room)
