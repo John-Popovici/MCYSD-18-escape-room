@@ -6,13 +6,14 @@ from typing import override
 
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
 from escaperoom.utils import item_to_str, log
+from escaperoom.transcript import TranscriptLogger
 
 
 class Vault(Base):
     """Room handling Vault-related commands."""
 
     @override
-    def __init__(self, data_path: str) -> None:
+    def __init__(self, transcript_logger: TranscriptLogger, data_path: str) -> None:
         """Initialize the Vault room."""
         super().__init__(
             name="Vault Corridor",
@@ -21,6 +22,7 @@ class Vault(Base):
             + "Who has been trying to get in?",
             items=["vault_dump.txt"],
             files=[f"{data_path}vault_dump.txt"],
+            transcript_logger=transcript_logger,
         )
         self.inspected_file = False
 
@@ -39,6 +41,9 @@ class Vault(Base):
             output_str: str = "Veriying checksums...\n"
             [item_name, item_data] = self.solve(self.files[0])
             output_str += item_to_str(item_name, item_data)
+            
+            # Log evidence in transcript
+            self.transcript_logger.log_evidence(item_to_str(item_name, item_data))
 
             # Add data to inventory
             room_input.inventory[item_name] = item_data

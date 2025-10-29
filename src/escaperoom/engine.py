@@ -10,7 +10,7 @@ from escaperoom.rooms.malware import Malware
 from escaperoom.rooms.soc import Soc
 from escaperoom.rooms.vault import Vault
 from escaperoom.utils import log, print_log
-
+from escaperoom.transcript import TranscriptLogger
 
 class Engine:
     """Main REPL engine handling user input and room logic."""
@@ -30,6 +30,7 @@ class Engine:
         Path(transcript_loc).parent.mkdir(parents=True, exist_ok=True)
         Path(transcript_loc).write_text(data="")
         self.transcript_loc: str = transcript_loc
+        self.transcript_logger: TranscriptLogger = TranscriptLogger(file=self.transcript_loc)
 
         # Set up log
         log_str: str = "-------------------------------\n"
@@ -46,10 +47,10 @@ class Engine:
         # Set up rooms and current_room
         self.rooms: set[Base] = {
             Intro(),
-            Soc(data_path),
-            Dns(data_path),
-            Vault(data_path),
-            Malware(data_path),
+            Soc(self.transcript_logger, data_path),
+            Dns(self.transcript_logger, data_path),
+            Vault(self.transcript_logger, data_path),
+            Malware(self.transcript_logger, data_path),
         }
 
         self.current_room: Base = self.set_start_room(self.rooms, start_room)
