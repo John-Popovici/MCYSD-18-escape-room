@@ -46,11 +46,6 @@ class Vault(Base):
             [item_name, item_data] = self.solve(self.files[0])
             output_str += item_to_str(item_name, item_data)
 
-            # Log evidence in transcript
-            self.transcript_logger.log_evidence(
-                item_to_str(item_name, item_data),
-            )
-
             # Add data to inventory
             room_input.inventory[item_name] = item_data
 

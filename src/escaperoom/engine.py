@@ -148,7 +148,10 @@ class Engine:
     def quit(self) -> str:
         """Implement game command: quit."""
         self.game_running = False
-        return "Quitting the game.\n"
+
+        self.transcript_logger.log_inventory(self.inventory)
+
+        return "Goodbye. Transcript written to run.txt\n"
 
     def move(self, command: list[str]) -> str:
         """Implement game command: move."""

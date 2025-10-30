@@ -2,6 +2,8 @@
 
 from pathlib import Path
 
+from escaperoom.utils import item_to_str
+
 
 class TranscriptLogger:
     """Transcript logger."""
@@ -11,7 +13,7 @@ class TranscriptLogger:
 
         Args:
             file (str, optional): The file in which the transcript
-                                  should be logger. Defaults to "run.txt".
+                                  will be saved. Defaults to "run.txt".
 
         """
         self.file = file
@@ -22,13 +24,25 @@ class TranscriptLogger:
         if not Path(file).exists():
             open(file, "w", encoding="utf-8").close()
 
-    def log_evidence(self, evidence: str) -> None:
-        """Log evidence to the transcript file.
+    def log_inventory(
+        self,
+        inventory: dict[str, dict[str, str]],
+    ) -> None:
+        """Log inventory to the transcript file.
 
         Args:
-            evidence (str): The collected evidence that should
-                            be logged in the transcript.
+            inventory (dict[str, dict[str, str]]):
+                The inventory that should
+                be logged to the transcript.
 
         """
         with open(self.file, "a") as f:
-            f.write(evidence)
+            f.writelines(
+                item_to_str(
+                    item_name,
+                    item_data,
+                )
+                for item_name, item_data
+                in inventory.items()
+            )
+
