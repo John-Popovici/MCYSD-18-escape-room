@@ -153,6 +153,10 @@ class Engine:
 
     def move(self, command: list[str]) -> str:
         """Implement game command: move."""
+        # If no room specified
+        if len(command) == 1:
+            return "Specify a move room target.\n"
+
         # If already in the room
         if command[1] in self.current_room.names:
             return f"You are already in the {self.current_room.name}.\n"

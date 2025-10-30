@@ -61,6 +61,7 @@ def test_room_interaction(request, room_name) -> None:  # noqa: ANN001
     room: Base = load_room(room_name)
 
     commands: dict[tuple[str], bool] = {
+        ("inspect",): False,
         ("inspect", "fake_item"): False,
         ("inspect", "auth.log"): room_name == "soc",
         ("inspect", "dns.cfg"): room_name == "dns",

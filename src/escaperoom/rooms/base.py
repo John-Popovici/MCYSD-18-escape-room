@@ -55,20 +55,30 @@ class Base(ABC):
         # Handle look, inspect, use
         match room_input.command[0]:
             case "look":
-                return self.look()
+                result = self.look()
             case "inspect":
-                return self.interact(room_input)
+                if len(room_input.command) == 1:
+                    result = self.failed_interact()
+                else:
+                    result = self.interact(room_input)
             case "use":
-                return self.interact(room_input)
+                if len(room_input.command) == 1:
+                    result = self.failed_interact()
+                else:
+                    result = self.interact(room_input)
             case "interact":
-                return self.interact(room_input)
+                if len(room_input.command) == 1:
+                    result = self.failed_interact()
+                else:
+                    result = self.interact(room_input)
             case "hint":
-                return self.hint(room_input)
+                result = self.hint(room_input)
             case _:
-                return RoomOutput(
+                result = RoomOutput(
                     success=False,
                     message=f"No such command {room_input.command[0]}.\n",
                 )
+        return result
 
     @abstractmethod
     def hint(self, room_input: RoomInput) -> RoomOutput:
@@ -89,6 +99,13 @@ class Base(ABC):
         return RoomOutput(
             success=True,
             message=msg,
+        )
+
+    def failed_interact(self) -> RoomOutput:
+        """Interaction without specified item."""
+        return RoomOutput(
+            success=False,
+            message="Specify an item to interact with.\n",
         )
 
     def interact(self, room_input: RoomInput) -> RoomOutput:
