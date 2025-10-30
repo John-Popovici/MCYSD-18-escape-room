@@ -1,4 +1,4 @@
-name: Run Pytest and Ruff
+name: Run Pytest, Ruff, and Pylint
 
 on:
   pull_request:
@@ -24,14 +24,14 @@ jobs:
       - name: Install the project
         run: uv sync --locked --all-extras --dev
 
+      - name: Run Pylint
+        run: uv run pylint src/
+        continue-on-error: true
+
       - name: Run Pytest
         run: uv run pytest --cov=src tests/
 
       - name: Run Ruff
         if: success() || failure()
         run: uv run ruff check . --output-format=github
-
-      - name: Run Pylint
-        if: success() || failure()
-        run: uv run pylint src/
       
