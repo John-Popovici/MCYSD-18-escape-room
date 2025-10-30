@@ -73,7 +73,7 @@ def test_room_interaction(request, room_name) -> None:  # noqa: ANN001
 
         # Expect fail of unimplemented inspect and use functions
         if command[0] in ("inspect", "use") and room_name in (
-            "soc",
+            # "soc",
             # "dns",
             # "vault",
             # "malware",
