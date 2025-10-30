@@ -192,12 +192,16 @@ class Engine:
         Available commands
         ------------------
 
-        - help         Show this help message
-        - move <room>  Move to a different room
-        - inventory    Show your current inventory
-        - save         Save the current game state
-        - load         Load a previously saved game
-        - quit         Exit the game
+        - help            Show this help message
+        - hint            Display a gameplay hint
+        - move <room>     Move to a different room
+        - inventory       Show your current inventory
+        - save            Save the current game state
+        - load            Load a previously saved game
+        - quit            Exit the game
+        - inspect <item>  Interact with an item
+        - use <item>      Interact with an item
+        - interact <item> Interact with an item
         \n
         """)
 
