@@ -81,10 +81,7 @@ class Base(ABC):
         msg: str = f"You are in the {self.name}.\n"
         msg += f"{self.desc}\n"
         if self.items is not None and len(self.items) > 0:
-            msg += "Items to interact with:"
-            for item in self.items:
-                msg += f" {item}"
-            msg += "\n"
+            msg += "Items to interact with: " + ", ".join(self.items) + "\n"
         else:
             msg += "There are no items to interact with.\n"
 

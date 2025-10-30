@@ -134,11 +134,12 @@ class Engine:
         """Implement engine layer for game command: look."""
         output_str: str = room_output.message
         if len(self.rooms) > 1:
-            output_str += "Doors lead to:"
-            for room in self.rooms:
-                if self.current_room is not room:
-                    output_str += f" {room.short_name}"
-            output_str += "\n"
+            doors: list[str] = [
+                room.short_name
+                for room in self.rooms
+                if self.current_room is not room
+            ]
+            output_str += "Doors lead to: " + ", ".join(doors) + "\n"
 
         return output_str
 
@@ -203,8 +204,9 @@ class Engine:
             str: The response of the command.
 
         """
-        output_str = ("You currently hold: " +
-        ", ".join(self.inventory.keys()) + "\n")
+        output_str = (
+            "You currently hold: " + ", ".join(self.inventory.keys()) + "\n"
+        )
 
         if not self.inventory:
             output_str = "You do not have any items in your inventory.\n"
