@@ -49,10 +49,10 @@ class Engine:
         # Set up rooms and current_room
         self.rooms: set[Base] = {
             Intro(),
-            Soc(self.transcript_logger, data_path),
-            Dns(self.transcript_logger, data_path),
-            Vault(self.transcript_logger, data_path),
-            Malware(self.transcript_logger, data_path),
+            Soc(data_path),
+            Dns(data_path),
+            Vault(data_path),
+            Malware(data_path),
         }
 
         self.current_room: Base = self.set_start_room(self.rooms, start_room)
