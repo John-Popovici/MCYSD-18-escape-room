@@ -31,4 +31,7 @@ jobs:
         if: success() || failure()
         run: uv run ruff check . --output-format=github
 
+      - name: Run Pylint
+        if: success() || failure()
+        run: uv run pylint src/
       
