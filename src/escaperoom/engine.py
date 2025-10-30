@@ -9,6 +9,7 @@ from escaperoom.rooms.intro import Intro
 from escaperoom.rooms.malware import Malware
 from escaperoom.rooms.soc import Soc
 from escaperoom.rooms.vault import Vault
+from escaperoom.transcript import TranscriptLogger
 from escaperoom.utils import log, print_log
 
 
@@ -30,6 +31,7 @@ class Engine:
         Path(transcript_loc).parent.mkdir(parents=True, exist_ok=True)
         Path(transcript_loc).write_text(data="")
         self.transcript_loc: str = transcript_loc
+        self.transcript_logger = TranscriptLogger(file=self.transcript_loc)
 
         # Set up log
         log_str: str = "-------------------------------\n"
@@ -46,10 +48,10 @@ class Engine:
         # Set up rooms and current_room
         self.rooms: set[Base] = {
             Intro(),
-            Soc(data_path),
-            Dns(data_path),
-            Vault(data_path),
-            Malware(data_path),
+            Soc(self.transcript_logger, data_path),
+            Dns(self.transcript_logger, data_path),
+            Vault(self.transcript_logger, data_path),
+            Malware(self.transcript_logger, data_path),
         }
 
         self.current_room: Base = self.set_start_room(self.rooms, start_room)
@@ -146,7 +148,10 @@ class Engine:
     def quit(self) -> str:
         """Implement game command: quit."""
         self.game_running = False
-        return "Quitting the game.\n"
+
+        self.transcript_logger.log_inventory(self.inventory)
+
+        return "Goodbye. Transcript written to run.txt\n"
 
     def move(self, command: list[str]) -> str:
         """Implement game command: move."""

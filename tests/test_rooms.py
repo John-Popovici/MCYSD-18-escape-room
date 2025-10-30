@@ -6,6 +6,7 @@ import pkgutil
 import pytest
 
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
+from src.escaperoom.transcript import TranscriptLogger
 
 ROOMS_PACKAGE = "src.escaperoom.rooms"
 # Discover all modules under src.escaperoom.rooms
@@ -18,6 +19,7 @@ for _, name, _ in pkgutil.iter_modules([ROOMS_PACKAGE.replace(".", "/")]):
 def load_room(room_name: str) -> Base:
     """Dynamically load a room class."""
     module = importlib.import_module(f"{ROOMS_PACKAGE}.{room_name}")
+    transcript_logger = TranscriptLogger()
 
     # Find a class that subclasses Base
     room_cls: Base | None = None
@@ -30,8 +32,9 @@ def load_room(room_name: str) -> Base:
     assert room_cls, f"No subclass of Base found in {room_name}"
 
     # Initialize room (inject dummy data path)
-    return room_cls() if room_name == "intro" else room_cls("data/")
-
+    if room_name == "intro":
+        return room_cls()
+    return room_cls(transcript_logger, "data/")
 
 @pytest.mark.parametrize("room_name", room_modules)
 def test_room_basic(room_name) -> None:  # noqa: ANN001
