@@ -8,74 +8,6 @@ from escaperoom.rooms.base import Base, RoomInput, RoomOutput
 from escaperoom.utils import item_to_str
 
 
-def parse_failed_ip(line: str) -> tuple[str, str | None]:
-    """Check through the file and returns the ip's."""
-    if "Failed password" not in line:
-        return ("irrelevant", None)
-    if " from " not in line:
-        return("malformed", None)
-    """Check each line if they have the right construction."""
-    ip_addr = line.find(" from ")
-    """Find the right index for the IP address."""
-    tail_ip_addr = line[ip_addr + len(" from "):]
-    """Check if the IP has the right format"""
-    match_ip = re.search( r"\d+(?:\.\d+){3}", tail_ip_addr)
-
-    if match_ip is None:
-        return ("malformed", None)
-    ip_str = match_ip.group()
-
-    try:
-        ipa.IPv4Address(ip_str)
-    except ValueError:
-        return ("malformed", None)
-    return("failed", ip_str)
-
-def collect_failed_ip(file_path:str) -> tuple[list[str], int]:
-    """Open the file.
-
-    Checks each line for status and IP; appends failed-login IPs to a list and
-    increments a counter for malformed lines.
-    """
-    with open(file_path, encoding="utf-8") as f:
-        failed_ip=[]
-        malformed_count= 0
-        for line in f:
-            status, ip = parse_failed_ip(line)
-            if status == "failed":
-                failed_ip.append(ip)
-            elif status == "malformed":
-                malformed_count += 1
-            else:
-                continue
-        return failed_ip, malformed_count
-
-def find_right_subnet(ip_list:list) -> str :
-    """Find the most used subnet."""
-    ip_dict={}
-    sub_dict={}
-    for i in ip_list:
-        if i in ip_dict:
-            ip_dict[i]+=1
-        else:
-            ip_dict.update({i: 1})
-    """Remove last part of ip and replace it with subnet."""
-    for i in ip_dict:
-        subnet_ip= i.split(".")
-        subnet_ip.pop()
-        subnet_prefinal= (".").join(subnet_ip)
-        subnet_final= subnet_prefinal + ".0/24"
-
-        if subnet_final in sub_dict:
-            sub_dict[subnet_final]+= 1
-        else:
-            sub_dict.update({subnet_final: 1})
-    """Find most used subnet with .get to find the highest value."""
-    most_used_subnet= max(sub_dict, key= sub_dict.get)
-
-    return most_used_subnet, sub_dict[most_used_subnet]
-
-
 class Soc(Base):
     """Room handling SOC-related commands."""
 
@@ -136,10 +68,10 @@ class Soc(Base):
 
         Uses a temporary variable to process failed IPs and create the TOKEN.
         """
-        failed_ips, _ = collect_failed_ip(file_path)
+        failed_ips, _ = self.collect_failed_ip(file_path)
         if not failed_ips:
             return ("KEYPAD", {"TOKEN" : "NONE"})
-        very_used_subnet, count_subnet  = find_right_subnet(failed_ips)
+        very_used_subnet, count_subnet  = self.find_right_subnet(failed_ips)
 
         """Inside of final_ip, because ruff check asked for it."""
         final_ip = [
@@ -162,3 +94,70 @@ class Soc(Base):
                 "COUNT": str(count_subnet),
             },
         )
+
+    def parse_failed_ip(self, line: str) -> tuple[str, str | None]:
+        """Check through the file and returns the ip's."""
+        if "Failed password" not in line:
+            return ("irrelevant", None)
+        if " from " not in line:
+            return("malformed", None)
+        """Check each line if they have the right construction."""
+        ip_addr = line.find(" from ")
+        """Find the right index for the IP address."""
+        tail_ip_addr = line[ip_addr + len(" from "):]
+        """Check if the IP has the right format"""
+        match_ip = re.search( r"\d+(?:\.\d+){3}", tail_ip_addr)
+
+        if match_ip is None:
+            return ("malformed", None)
+        ip_str = match_ip.group()
+
+        try:
+            ipa.IPv4Address(ip_str)
+        except ValueError:
+            return ("malformed", None)
+        return("failed", ip_str)
+
+    def collect_failed_ip(self, file_path:str) -> tuple[list[str], int]:
+        """Open the file.
+
+        Checks each line for status and IP; appends failed-login IPs to a list
+        and increments a counter for malformed lines.
+        """
+        with open(file_path, encoding="utf-8") as f:
+            failed_ip=[]
+            malformed_count= 0
+            for line in f:
+                status, ip = self.parse_failed_ip(line)
+                if status == "failed":
+                    failed_ip.append(ip)
+                elif status == "malformed":
+                    malformed_count += 1
+                else:
+                    continue
+            return failed_ip, malformed_count
+
+    def find_right_subnet(self, ip_list:list) -> str :
+        """Find the most used subnet."""
+        ip_dict={}
+        sub_dict={}
+        for i in ip_list:
+            if i in ip_dict:
+                ip_dict[i]+=1
+            else:
+                ip_dict.update({i: 1})
+        """Remove last part of ip and replace it with subnet."""
+        for i in ip_dict:
+            subnet_ip= i.split(".")
+            subnet_ip.pop()
+            subnet_prefinal= (".").join(subnet_ip)
+            subnet_final= subnet_prefinal + ".0/24"
+
+            if subnet_final in sub_dict:
+                sub_dict[subnet_final]+= 1
+            else:
+                sub_dict.update({subnet_final: 1})
+        """Find most used subnet with .get to find the highest value."""
+        most_used_subnet= max(sub_dict, key= sub_dict.get)
+
+        return most_used_subnet, sub_dict[most_used_subnet]
