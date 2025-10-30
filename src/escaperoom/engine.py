@@ -1,7 +1,6 @@
 """The engine for the escape game."""
 
 import textwrap
-from pathlib import Path
 
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
 from escaperoom.rooms.dns import Dns
@@ -28,8 +27,6 @@ class Engine:
         self.game_running: bool = True
 
         # Set up transcript file
-        Path(transcript_loc).parent.mkdir(parents=True, exist_ok=True)
-        Path(transcript_loc).write_text(data="")
         self.transcript_loc: str = transcript_loc
         self.transcript_logger = TranscriptLogger(file=self.transcript_loc)
 
@@ -213,5 +210,3 @@ class Engine:
             output_str = "You do not have any items in your inventory.\n"
 
         return output_str
-
-

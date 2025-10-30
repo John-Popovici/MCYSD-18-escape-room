@@ -20,9 +20,9 @@ class TranscriptLogger:
 
         # Ensure the transcript directory exists
         Path(file).parent.mkdir(parents=True, exist_ok=True)
-        # Ensure the transcript file exists
-        if not Path(file).exists():
-            open(file, "w", encoding="utf-8").close()
+        # Clean transcript
+        with open(file, "w", encoding="utf-8") as f:
+            f.write("")
 
     def log_inventory(
         self,
@@ -36,13 +36,8 @@ class TranscriptLogger:
                 be logged to the transcript.
 
         """
-        with open(self.file, "a") as f:
+        with open(self.file, "a", encoding="utf-8") as f:
             f.writelines(
-                item_to_str(
-                    item_name,
-                    item_data,
-                )
-                for item_name, item_data
-                in inventory.items()
+                item_to_str(item_name, item_data)
+                for item_name, item_data in inventory.items()
             )
-
