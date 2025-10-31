@@ -5,7 +5,6 @@ import re
 from typing import override
 
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
-from escaperoom.transcript import TranscriptLogger
 from escaperoom.utils import item_to_str
 
 
@@ -15,7 +14,6 @@ class Soc(Base):
     @override
     def __init__(
         self,
-        transcript_logger: TranscriptLogger,
         data_path: str,
     ) -> None:
         """Initialize the SOC room."""
@@ -27,7 +25,6 @@ class Soc(Base):
             items=["auth.log"],
             files=[f"{data_path}auth.log"],
         )
-        self.transcript_logger=transcript_logger
         self.inspected_file = False
 
     @override

@@ -1,5 +1,6 @@
 """The engine for the escape game."""
 
+import json
 import textwrap
 
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
@@ -45,10 +46,10 @@ class Engine:
         # Set up rooms and current_room
         self.rooms: set[Base] = {
             Intro(),
-            Soc(self.transcript_logger, data_path),
-            Dns(self.transcript_logger, data_path),
-            Vault(self.transcript_logger, data_path),
-            Malware(self.transcript_logger, data_path),
+            Soc(data_path),
+            Dns(data_path),
+            Vault(data_path),
+            Malware(data_path),
         }
 
         self.current_room: Base = self.set_start_room(self.rooms, start_room)
@@ -94,19 +95,20 @@ class Engine:
         # Handle engine commands move, inventory, hint, save, load, quit
         match command[0]:
             case "move":
-                return self.move(command)
+                result = self.move(command)
             case "inventory":
-                return self.show_inventory()
+                result = self.show_inventory()
             case "help":
-                return self.help()
+                result = self.help()
             case "save":
-                raise NotImplementedError
+                result = self.save(command)
             case "load":
-                raise NotImplementedError
+                result = self.load(command)
             case "quit":
-                return self.quit()
+                result = self.quit()
             case _:
-                return self.handle_room_command(command)
+                result = self.handle_room_command(command)
+        return result
 
     def handle_room_command(self, command: list[str]) -> str:
         """Delegate command to the current room and handle special cases."""
@@ -220,3 +222,38 @@ class Engine:
             output_str = "You do not have any items in your inventory.\n"
 
         return output_str
+
+    def save(self, command: list[str]) -> str:
+        """Save the game session.
+
+        Args:
+            command (list[str]):
+                The command the user has entered.
+
+        Returns:
+            str: "Progress saved." or an error prompt.
+
+        """
+        if command and len(command) > 1:
+            with open(command[1], "w") as f:
+                f.write(json.dumps(self.inventory))
+                return "Progress saved.\n"
+        else:
+            return "Please specify a file to save your session to.\n"
+
+    def load(self, command: list[str]) -> str:
+        """Load a game session.
+
+        Args:
+            command (list[str]):
+                The command the user has entered
+        Returns:
+            str: "Progress loaded." or an error prompt.
+
+        """
+        if command and len(command) > 1:
+            with open(command[1]) as f:
+                self.inventory = json.loads(f.read())
+                return "Progress loaded.\n"
+        else:
+            return "Please specify a file to load your session from.\n"

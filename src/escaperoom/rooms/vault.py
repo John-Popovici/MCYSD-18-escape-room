@@ -4,7 +4,6 @@ import re
 from typing import override
 
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
-from escaperoom.transcript import TranscriptLogger
 from escaperoom.utils import item_to_str, log
 
 
@@ -14,7 +13,6 @@ class Vault(Base):
     @override
     def __init__(
         self,
-        transcript_logger: TranscriptLogger,
         data_path: str,
     ) -> None:
         """Initialize the Vault room."""
@@ -26,7 +24,6 @@ class Vault(Base):
             items=["vault_dump.txt"],
             files=[f"{data_path}vault_dump.txt"],
         )
-        self.transcript_logger=transcript_logger
         self.inspected_file = False
 
     @override
