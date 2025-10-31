@@ -60,7 +60,7 @@ def main() -> None:
         print_log(str(e))
         tb_str: str = traceback.format_exc()
         log(tb_str)
-    except Exception:  # noqa: BLE001
+    except Exception:  # noqa: BLE001 # logging used in testing
         print_log("An error has occured. See log for details.\n")
         tb_str: str = traceback.format_exc()
         log(tb_str)

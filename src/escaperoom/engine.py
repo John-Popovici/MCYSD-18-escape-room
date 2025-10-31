@@ -2,7 +2,6 @@
 
 import json
 import textwrap
-from pathlib import Path
 
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
 from escaperoom.rooms.dns import Dns
@@ -29,8 +28,6 @@ class Engine:
         self.game_running: bool = True
 
         # Set up transcript file
-        Path(transcript_loc).parent.mkdir(parents=True, exist_ok=True)
-        Path(transcript_loc).write_text(data="")
         self.transcript_loc: str = transcript_loc
         self.transcript_logger = TranscriptLogger(file=self.transcript_loc)
 
@@ -139,11 +136,12 @@ class Engine:
         """Implement engine layer for game command: look."""
         output_str: str = room_output.message
         if len(self.rooms) > 1:
-            output_str += "Doors lead to:"
-            for room in self.rooms:
-                if self.current_room is not room:
-                    output_str += f" {room.short_name}"
-            output_str += "\n"
+            doors: list[str] = [
+                room.short_name
+                for room in self.rooms
+                if self.current_room is not room
+            ]
+            output_str += "Doors lead to: " + ", ".join(doors) + "\n"
 
         return output_str
 
@@ -157,6 +155,10 @@ class Engine:
 
     def move(self, command: list[str]) -> str:
         """Implement game command: move."""
+        # If no room specified
+        if len(command) == 1:
+            return "Specify a move room target.\n"
+
         # If already in the room
         if command[1] in self.current_room.names:
             return f"You are already in the {self.current_room.name}.\n"
@@ -192,12 +194,16 @@ class Engine:
         Available commands
         ------------------
 
-        - help         Show this help message
-        - move <room>  Move to a different room
-        - inventory    Show your current inventory
-        - save         Save the current game state
-        - load         Load a previously saved game
-        - quit         Exit the game
+        - help            Show this help message
+        - hint            Display a gameplay hint
+        - move <room>     Move to a different room
+        - inventory       Show your current inventory
+        - save            Save the current game state
+        - load            Load a previously saved game
+        - quit            Exit the game
+        - inspect <item>  Interact with an item
+        - use <item>      Interact with an item
+        - interact <item> Interact with an item
         \n
         """)
 
@@ -208,8 +214,9 @@ class Engine:
             str: The response of the command.
 
         """
-        output_str = ("You currently hold: " +
-        ", ".join(self.inventory.keys()) + "\n")
+        output_str = (
+            "You currently hold: " + ", ".join(self.inventory.keys()) + "\n"
+        )
 
         if not self.inventory:
             output_str = "You do not have any items in your inventory.\n"

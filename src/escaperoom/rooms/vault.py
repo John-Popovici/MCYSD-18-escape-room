@@ -1,7 +1,6 @@
 """Vault room implementation."""
 
 import re
-from pathlib import Path
 from typing import override
 
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
@@ -35,7 +34,7 @@ class Vault(Base):
             if self.inspected_file:
                 return RoomOutput(
                     success=False,
-                    message="This has already been inspected.\n",
+                    message="The vault code has already been obtained.\n",
                 )
 
             # Solve the room challenge
@@ -58,9 +57,11 @@ class Vault(Base):
         """Implement game command: hint."""
         output_str: str = ""
         if self.inspected_file:
-            output_str += "You have everything you need from this room.\n"
+            output_str += ("You have found the vault code. " +
+            "Time to see what other rooms hold.\n")
         else:
-            output_str += "You feel there is something in this room to do.\n"
+            output_str += ("Maybe inspecting the vault dump will " +
+            "provide some information.\n")
         return RoomOutput(
             success=True,
             message=output_str,
@@ -71,7 +72,8 @@ class Vault(Base):
         regex_pattern: str = (
             r"S\s*A\s*F\s*E\s*{\s*(\d+)\s*-\s*(\d+)\s*-\s*(\d+)\s*}"
         )
-        data: str = Path(file_path).read_text()
+        with open(file_path, encoding="utf-8") as f:
+            data: str = f.read()
 
         # Perform regex search for all pattern matches
         search: list[tuple[str]] = re.findall(regex_pattern, data)
