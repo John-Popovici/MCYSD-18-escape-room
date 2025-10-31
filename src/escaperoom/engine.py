@@ -235,7 +235,7 @@ class Engine:
 
         """
         if command and len(command) > 1:
-            with open(command[1], "w") as f:
+            with open(command[1], "w", encoding="utf-8") as f:
                 f.write(json.dumps(self.inventory))
                 return "Progress saved.\n"
         else:
@@ -252,7 +252,7 @@ class Engine:
 
         """
         if command and len(command) > 1:
-            with open(command[1]) as f:
+            with open(command[1],  encoding="utf-8") as f:
                 self.inventory = json.loads(f.read())
                 return "Progress loaded.\n"
         else:
