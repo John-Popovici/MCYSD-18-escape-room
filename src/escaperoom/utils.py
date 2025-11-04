@@ -21,6 +21,11 @@ def item_to_str(item_name: str, item_data: dict[str, str]) -> str:
     try:
         output_str: str = ""
 
+        if item_name == "FINAL":
+            for entry in item_data:
+                output_str += f"{entry}={item_data.get(entry)}\n"
+
+            return output_str
         # Add token value
         output_str += f"TOKEN[{item_name}]={item_data['TOKEN']}\n"
 

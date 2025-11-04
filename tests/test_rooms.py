@@ -79,7 +79,7 @@ def test_room_interaction(request, room_name) -> None:  # noqa: ANN001
             # "dns",
             # "vault",
             # "malware",
-            "final",
+            # "final",
         ):
             request.node.add_marker(
                 pytest.mark.xfail(reason="Not yet implemented"),
