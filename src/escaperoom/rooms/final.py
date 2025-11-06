@@ -42,7 +42,9 @@ class Final(Base):
 
                 # Solve the room challenge
                 output_str: str = "Collected tokens: \n"
-                [item_name, item_data] = self.solve(self.files[0])
+                [item_name, item_data] = self.solve(
+                    self.files[0], room_input.inventory,
+                )
                 output_str: str = item_to_str(item_name, item_data)
 
                 # Add data to inventory
@@ -85,7 +87,11 @@ class Final(Base):
             message=output_str,
         )
 
-    def solve(self, file_path: str) -> tuple[str, dict[str, str]]:
+    def solve(
+        self,
+        file_path: str,
+        inventory: dict[str, dict[str, str]],
+    ) -> tuple[str, dict[str, str]]:
         """Solves the room challenge."""
         data = Path(file_path).read_text()
 
@@ -102,11 +108,13 @@ class Final(Base):
                 elif line.startswith("token_order"):
                     token_order = line.split("=")[1].split(",")
 
+        tokens = [inventory.get(token).get("TOKEN") for token in token_order]
+
         return (
             "FINAL",
             {
                 "FINAL_GATE": "PENDING",
-                "MSG": f"{group_id}|{'-'.join(token_order)}",
+                "MSG": f"{group_id}|{'-'.join(tokens)}",
                 "EXPECTED_HMAC": expected_hmac,
             },
         )
