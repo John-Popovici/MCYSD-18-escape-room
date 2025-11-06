@@ -12,7 +12,8 @@ def print_log(output_str: str) -> None:
 
 def log(output_str: str) -> None:
     """Log the output string."""
-    Path("log.log").open("a").write(output_str)  # noqa: SIM115
+    with open(Path("log.log"), "a", encoding="utf-8") as f:
+        f.write(output_str)
 
 
 def item_to_str(item_name: str, item_data: dict[str, str]) -> str:
@@ -29,7 +30,7 @@ def item_to_str(item_name: str, item_data: dict[str, str]) -> str:
                 output_str += f"EVIDENCE[{item_name}].{entry}={data}\n"
 
         return output_str
-    except Exception:  # noqa: BLE001
+    except Exception:  # noqa: BLE001 # logging used in testing
         # Log exception
         log("Error in parsing item.\n")
         tb_str: str = traceback.format_exc()

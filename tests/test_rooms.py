@@ -30,8 +30,9 @@ def load_room(room_name: str) -> Base:
     assert room_cls, f"No subclass of Base found in {room_name}"
 
     # Initialize room (inject dummy data path)
-    return room_cls() if room_name == "intro" else room_cls("data/")
-
+    if room_name == "intro":
+        return room_cls()
+    return room_cls("data/")
 
 @pytest.mark.parametrize("room_name", room_modules)
 def test_room_basic(room_name) -> None:  # noqa: ANN001
@@ -58,6 +59,7 @@ def test_room_interaction(request, room_name) -> None:  # noqa: ANN001
     room: Base = load_room(room_name)
 
     commands: dict[tuple[str], bool] = {
+        ("inspect",): False,
         ("inspect", "fake_item"): False,
         ("inspect", "auth.log"): room_name == "soc",
         ("inspect", "dns.cfg"): room_name == "dns",

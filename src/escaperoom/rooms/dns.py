@@ -3,7 +3,6 @@
 import base64
 import binascii
 import configparser
-from pathlib import Path
 from typing import override
 
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
@@ -14,7 +13,10 @@ class Dns(Base):
     """A room presenting a configuration analysis and decoding challenge."""
 
     @override
-    def __init__(self, data_path: str) -> None:
+    def __init__(
+        self,
+        data_path: str,
+    ) -> None:
         """Initialize the DNS Closet room."""
         super().__init__(
             name="DNS Closet",
@@ -38,7 +40,7 @@ class Dns(Base):
 
             # Solve the room challenge
             output_str: str = "Decoding hints...\n"
-            item_name, item_data = self.solve(self.files[0])
+            [item_name, item_data] = self.solve(self.files[0])
             output_str += item_to_str(item_name, item_data)
 
             # Add data to inventory
@@ -56,10 +58,10 @@ class Dns(Base):
         """Implement game command: hint."""
         output_str: str = ""
         if self.inspected_file:
-            output_str += "You have everything you need from this room.\n"
+            output_str += f"The {self.name} holds nothing unchecked.\n"
         else:
-            output_str += ("You feel there is something in " +
-            "this room to inspect.\n")
+            output_str += ("The scribbled scribbled key=value pairs " +
+            "need to be inspected. They must hold some information.\n")
         return RoomOutput(
             success=True,
             message=output_str,
@@ -67,7 +69,8 @@ class Dns(Base):
 
     def solve(self, file_path: str) -> tuple[str, dict[str, str]]:
         """Solves the room challenge."""
-        data = Path(file_path).read_text()
+        with open(file_path, encoding="utf-8") as f:
+            data: str = f.read()
 
         config = configparser.ConfigParser(allow_no_value=True, strict=False)
         config.read_string("[DEFAULT]\n" + data)

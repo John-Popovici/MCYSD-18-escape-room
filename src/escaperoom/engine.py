@@ -1,7 +1,7 @@
 """The engine for the escape game."""
 
+import json
 import textwrap
-from pathlib import Path
 
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
 from escaperoom.rooms.dns import Dns
@@ -9,6 +9,7 @@ from escaperoom.rooms.intro import Intro
 from escaperoom.rooms.malware import Malware
 from escaperoom.rooms.soc import Soc
 from escaperoom.rooms.vault import Vault
+from escaperoom.transcript import TranscriptLogger
 from escaperoom.utils import log, print_log
 
 
@@ -27,9 +28,8 @@ class Engine:
         self.game_running: bool = True
 
         # Set up transcript file
-        Path(transcript_loc).parent.mkdir(parents=True, exist_ok=True)
-        Path(transcript_loc).write_text(data="")
         self.transcript_loc: str = transcript_loc
+        self.transcript_logger = TranscriptLogger(file=self.transcript_loc)
 
         # Set up log
         log_str: str = "-------------------------------\n"
@@ -95,19 +95,20 @@ class Engine:
         # Handle engine commands move, inventory, hint, save, load, quit
         match command[0]:
             case "move":
-                return self.move(command)
+                result = self.move(command)
             case "inventory":
-                return self.show_inventory()
+                result = self.show_inventory()
             case "help":
-                return self.help()
+                result = self.help()
             case "save":
-                raise NotImplementedError
+                result = self.save(command)
             case "load":
-                raise NotImplementedError
+                result = self.load(command)
             case "quit":
-                return self.quit()
+                result = self.quit()
             case _:
-                return self.handle_room_command(command)
+                result = self.handle_room_command(command)
+        return result
 
     def handle_room_command(self, command: list[str]) -> str:
         """Delegate command to the current room and handle special cases."""
@@ -135,21 +136,29 @@ class Engine:
         """Implement engine layer for game command: look."""
         output_str: str = room_output.message
         if len(self.rooms) > 1:
-            output_str += "Doors lead to:"
-            for room in self.rooms:
-                if self.current_room is not room:
-                    output_str += f" {room.short_name}"
-            output_str += "\n"
+            doors: list[str] = [
+                room.short_name
+                for room in self.rooms
+                if self.current_room is not room
+            ]
+            output_str += "Doors lead to: " + ", ".join(doors) + "\n"
 
         return output_str
 
     def quit(self) -> str:
         """Implement game command: quit."""
         self.game_running = False
-        return "Quitting the game.\n"
+
+        self.transcript_logger.log_inventory(self.inventory)
+
+        return "Goodbye. Transcript written to run.txt\n"
 
     def move(self, command: list[str]) -> str:
         """Implement game command: move."""
+        # If no room specified
+        if len(command) == 1:
+            return "Specify a move room target.\n"
+
         # If already in the room
         if command[1] in self.current_room.names:
             return f"You are already in the {self.current_room.name}.\n"
@@ -185,12 +194,16 @@ class Engine:
         Available commands
         ------------------
 
-        - help         Show this help message
-        - move <room>  Move to a different room
-        - inventory    Show your current inventory
-        - save         Save the current game state
-        - load         Load a previously saved game
-        - quit         Exit the game
+        - help            Show this help message
+        - hint            Display a gameplay hint
+        - move <room>     Move to a different room
+        - inventory       Show your current inventory
+        - save            Save the current game state
+        - load            Load a previously saved game
+        - quit            Exit the game
+        - inspect <item>  Interact with an item
+        - use <item>      Interact with an item
+        - interact <item> Interact with an item
         \n
         """)
 
@@ -201,12 +214,46 @@ class Engine:
             str: The response of the command.
 
         """
-        output_str = ("You currently hold: " +
-        ", ".join(self.inventory.keys()) + "\n")
+        output_str = (
+            "You currently hold: " + ", ".join(self.inventory.keys()) + "\n"
+        )
 
         if not self.inventory:
             output_str = "You do not have any items in your inventory.\n"
 
         return output_str
 
+    def save(self, command: list[str]) -> str:
+        """Save the game session.
 
+        Args:
+            command (list[str]):
+                The command the user has entered.
+
+        Returns:
+            str: "Progress saved." or an error prompt.
+
+        """
+        if command and len(command) > 1:
+            with open(command[1], "w", encoding="utf-8") as f:
+                f.write(json.dumps(self.inventory))
+                return "Progress saved.\n"
+        else:
+            return "Please specify a file to save your session to.\n"
+
+    def load(self, command: list[str]) -> str:
+        """Load a game session.
+
+        Args:
+            command (list[str]):
+                The command the user has entered
+        Returns:
+            str: "Progress loaded." or an error prompt.
+
+        """
+        if command and len(command) > 1:
+            with open(command[1],  encoding="utf-8") as f:
+                self.inventory = json.loads(f.read())
+                return "Progress loaded.\n"
+        else:
+            return "Please specify a file to load your session from.\n"

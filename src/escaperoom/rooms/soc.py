@@ -12,7 +12,10 @@ class Soc(Base):
     """Room handling SOC-related commands."""
 
     @override
-    def __init__(self, data_path: str) -> None:
+    def __init__(
+        self,
+        data_path: str,
+    ) -> None:
         """Initialize the SOC room."""
         super().__init__(
             name="SOC Triage Desk",
@@ -55,7 +58,7 @@ class Soc(Base):
         """Implement game command: hint."""
         output_str: str = ""
         if self.inspected_file:
-            output_str += "You have everything you need from this room.\n"
+            output_str += "You have already verified the authentication log.\n"
         else:
             output_str += "You feel there is something in this room to do.\n"
         return RoomOutput(
@@ -73,13 +76,13 @@ class Soc(Base):
             return ("KEYPAD", {"TOKEN" : "NONE"})
         very_used_subnet, count_subnet  = self.find_right_subnet(failed_ips)
 
-        """Inside of final_ip, because ruff check asked for it."""
+        # Inside of final_ip, because ruff check asked for it
         final_ip = [
             ip for ip in failed_ips
             if ipa.IPv4Address(ip) in ipa.IPv4Network(very_used_subnet)
         ]
 
-        """Check the most used IP for the TOKEN creation."""
+        # Check the most used IP for the TOKEN creation
         top_ip = max(final_ip, key=final_ip.count)
         """Picks one line in the auth.log file containing the most used ip."""
         sample_line = ""
@@ -91,7 +94,7 @@ class Soc(Base):
 
         """Just keep the last octet for the TOKEN."""
         final_token= top_ip.split(".")[3]
-        """TOKEN construction."""
+        # TOKEN construction
         token_final = final_token + str(count_subnet)
 
         return (
@@ -111,11 +114,11 @@ class Soc(Base):
             return ("irrelevant", None)
         if " from " not in line:
             return("malformed", None)
-        """Check each line if they have the right construction."""
+        # Check each line if they have the right construction
         ip_addr = line.find(" from ")
-        """Find the right index for the IP address."""
+        # Find the right index for the IP address
         tail_ip_addr = line[ip_addr + len(" from "):]
-        """Check if the IP has the right format"""
+        # Check if the IP has the right format
         match_ip = re.search( r"\d+(?:\.\d+){3}", tail_ip_addr)
 
         if match_ip is None:
@@ -156,7 +159,7 @@ class Soc(Base):
                 ip_dict[i]+=1
             else:
                 ip_dict.update({i: 1})
-        """Remove last part of ip and replace it with subnet."""
+        # Remove last part of ip and replace it with subnet
         for i in ip_dict:
             subnet_ip= i.split(".")
             subnet_ip.pop()
@@ -167,7 +170,7 @@ class Soc(Base):
                 sub_dict[subnet_final]+= 1
             else:
                 sub_dict.update({subnet_final: 1})
-        """Find most used subnet with .get to find the highest value."""
+        # Find most used subnet with .get to find the highest value
         most_used_subnet= max(sub_dict, key= sub_dict.get)
 
         return most_used_subnet, sub_dict[most_used_subnet]
