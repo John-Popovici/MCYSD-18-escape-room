@@ -81,7 +81,6 @@ class Soc(Base):
 
         """Check the most used IP for the TOKEN creation."""
         top_ip = max(final_ip, key=final_ip.count)
-        
         """Picks one line in the auth.log file containing the most used ip."""
         sample_line = ""
         with open(file_path, encoding="utf-8") as f:
@@ -89,7 +88,7 @@ class Soc(Base):
                 if top_ip in line:
                     sample_line = line.strip()
                     break
-        
+
         """Just keep the last octet for the TOKEN."""
         final_token= top_ip.split(".")[3]
         """TOKEN construction."""
@@ -101,8 +100,8 @@ class Soc(Base):
                 "TOKEN": token_final,
                 "TOP24": very_used_subnet,
                 "COUNT": str(count_subnet),
-                "SAMPLE": sample_line, 
-                "MALFORMED_SKIPPED": malformed_count
+                "SAMPLE": sample_line,
+                "MALFORMED_SKIPPED": malformed_count,
             },
         )
 
