@@ -71,7 +71,7 @@ class Soc(Base):
 
         Uses a temporary variable to process failed IPs and create the TOKEN.
         """
-        failed_ips, _ = self.collect_failed_ip(file_path)
+        failed_ips, malformed_count = self.collect_failed_ip(file_path)
         if not failed_ips:
             return ("KEYPAD", {"TOKEN" : "NONE"})
         very_used_subnet, count_subnet  = self.find_right_subnet(failed_ips)
@@ -84,7 +84,15 @@ class Soc(Base):
 
         # Check the most used IP for the TOKEN creation
         top_ip = max(final_ip, key=final_ip.count)
-        # Just keep the last octet for the TOKEN
+        """Picks one line in the auth.log file containing the most used ip."""
+        sample_line = ""
+        with open(file_path, encoding="utf-8") as f:
+            for line in f:
+                if top_ip in line:
+                    sample_line = line.strip()
+                    break
+
+        """Just keep the last octet for the TOKEN."""
         final_token= top_ip.split(".")[3]
         # TOKEN construction
         token_final = final_token + str(count_subnet)
@@ -95,6 +103,8 @@ class Soc(Base):
                 "TOKEN": token_final,
                 "TOP24": very_used_subnet,
                 "COUNT": str(count_subnet),
+                "SAMPLE": sample_line,
+                "MALFORMED_SKIPPED": malformed_count,
             },
         )
 
