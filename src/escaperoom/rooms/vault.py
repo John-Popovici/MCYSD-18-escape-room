@@ -70,7 +70,7 @@ class Vault(Base):
     def solve(self, file_path: str) -> (str, dict[str, str]):
         """Solves the room challenge."""
         regex_pattern: str = (
-            r"S\s*A\s*F\s*E\s*{\s*(\d+)\s*-\s*(\d+)\s*-\s*(\d+)\s*}"
+            r"(S\s*A\s*F\s*E\s*{\s*(\d+)\s*-\s*(\d+)\s*-\s*(\d+)\s*})"
         )
         with open(file_path, encoding="utf-8") as f:
             data: str = f.read()
@@ -79,26 +79,26 @@ class Vault(Base):
         search: list[tuple[str]] = re.findall(regex_pattern, data)
 
         # validate all pattern matches
-        valid_results: list[tuple[int]] = []
-        for a, b, c in search:
+        valid_results: list[tuple[str | int]] = []
+        for match, a, b, c in search:
             if int(a) + int(b) == int(c):
-                valid_results.append((int(a), int(b), int(c)))
+                valid_results.append((match, int(a), int(b), int(c)))
 
         # Log if more than one valid result found
         if len(valid_results) > 1:
             log("Found multiple valid results:\n")
-            for a, b, c in valid_results:
-                log(f"[{a}+{b}={c}]\n")
+            for match, a, b, c in valid_results:
+                log(f"{match} = [{a}+{b}={c}]\n")
 
         # TOKEN[SAFE]=a-b-c
         # EVIDENCE[SAFE].MATCH="SAFE{a-b-c}"
         # EVIDENCE[SAFE].CHECK=a+b=c
-        (a, b, c) = valid_results[0]
+        (match, a, b, c) = valid_results[0]
         return (
             "SAFE",
             {
                 "TOKEN": f"{a}-{b}-{c}",
-                "MATCH": f"SAFE{{{a}-{b}-{c}}}",
+                "MATCH": '"' + match + '"',
                 "CHECK": f"{a}+{b}={c}",
             },
         )
