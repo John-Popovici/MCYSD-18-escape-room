@@ -2,6 +2,7 @@
 
 import json
 import textwrap
+import traceback
 
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
 from escaperoom.rooms.dns import Dns
@@ -67,7 +68,13 @@ class Engine:
             command: list[str] = self.get_input()
 
             # Process command
-            output_str: str = self.handle_command(command)
+            output_str: str = ""
+            try:
+                output_str = self.handle_command(command)
+            except Exception:  # noqa: BLE001 # logging used in testing
+                output_str = "An error has occured. See log for details.\n"
+                tb_str: str = traceback.format_exc()
+                log(tb_str)
             print_log(output_str)
 
     @staticmethod
