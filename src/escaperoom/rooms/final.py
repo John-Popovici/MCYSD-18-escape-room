@@ -1,6 +1,5 @@
 """Final Gate room implementation."""
 
-from pathlib import Path
 from typing import override
 
 from escaperoom.rooms.base import Base, RoomInput, RoomOutput
@@ -78,10 +77,11 @@ class Final(Base):
         """Implement game command: hint."""
         output_str: str = ""
         if self.inspected_file:
-            output_str += "You have everything you need from this room.\n"
+            output_str += ("There is nothing left to do.\n" +
+            "You breathe a sigh of relief.\n")
         else:
-            output_str += ("You feel there is something in " +
-            "this room to inspect.\n")
+            output_str += ("Do you dare use the gate? " +
+            "It stands before you, beckoning.\n")
         return RoomOutput(
             success=True,
             message=output_str,
@@ -93,7 +93,8 @@ class Final(Base):
         inventory: dict[str, dict[str, str]],
     ) -> tuple[str, dict[str, str]]:
         """Solves the room challenge."""
-        data = Path(file_path).read_text()
+        with open(file_path, encoding="utf-8") as f:
+            data: str = f.read()
 
         group_id = ""
         expected_hmac = ""
