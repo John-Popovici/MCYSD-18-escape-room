@@ -108,8 +108,37 @@ class Soc(Base):
             },
         )
 
+    def find_right_subnet(self, ip_list:list) -> str :
+        """Find the most used subnet."""
+        ip_dict={}
+        for i in ip_list:
+            if i in ip_dict:
+                ip_dict[i]+=1
+            else:
+                ip_dict.update({i: 1})
+
+        # Remove last part of ip and replace it with subnet
+        sub_dict={}
+        for i, count in ip_dict.items():
+            subnet_ip= i.split(".")
+            subnet_ip.pop()
+            subnet_prefinal= (".").join(subnet_ip)
+            subnet_final= subnet_prefinal + ".0/24"
+
+            if subnet_final in sub_dict:
+                sub_dict[subnet_final]+= count
+            else:
+                sub_dict.update({subnet_final: count})
+
+        # Find most used subnet with .get to find the highest value
+        most_used_subnet= max(sub_dict, key= sub_dict.get)
+
+        return most_used_subnet, sub_dict[most_used_subnet]
+
     def parse_failed_ip(self, line: str) -> tuple[str, str | None]:
         """Check through the file and returns the ip's."""
+        if "password" not in line:
+            return ("malformed", None)
         if "Failed password" not in line:
             return ("irrelevant", None)
         if " from " not in line:
@@ -149,28 +178,3 @@ class Soc(Base):
                 else:
                     continue
             return failed_ip, malformed_count
-
-    def find_right_subnet(self, ip_list:list) -> str :
-        """Find the most used subnet."""
-        ip_dict={}
-        sub_dict={}
-        for i in ip_list:
-            if i in ip_dict:
-                ip_dict[i]+=1
-            else:
-                ip_dict.update({i: 1})
-        # Remove last part of ip and replace it with subnet
-        for i in ip_dict:
-            subnet_ip= i.split(".")
-            subnet_ip.pop()
-            subnet_prefinal= (".").join(subnet_ip)
-            subnet_final= subnet_prefinal + ".0/24"
-
-            if subnet_final in sub_dict:
-                sub_dict[subnet_final]+= 1
-            else:
-                sub_dict.update({subnet_final: 1})
-        # Find most used subnet with .get to find the highest value
-        most_used_subnet= max(sub_dict, key= sub_dict.get)
-
-        return most_used_subnet, sub_dict[most_used_subnet]
